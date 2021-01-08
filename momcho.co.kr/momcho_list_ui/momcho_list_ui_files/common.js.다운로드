@@ -1,0 +1,276 @@
+var domain = 'http://content.momcho.co.kr';
+var sDomain = 'http://www.momcho.co.kr';
+
+var versionCode = '';
+var versionName = '';
+
+var getParameter = function(param) {
+	var returnValue;
+	var url = location.href;
+	var parameters = (url.slice(url.indexOf('?') + 1, url.length)).split('&');
+	for (var i = 0; i < parameters.length; i++) {
+		var varName = parameters[i].split('=')[0];
+		if (varName.toUpperCase() == param.toUpperCase()) {
+			returnValue = parameters[i].split('=')[1];
+			return decodeURIComponent(returnValue);
+		}
+	}
+	
+	return '';
+};
+
+function numberToMobile(n) {
+	n = n.toString();
+	
+	if (n.length == 10) {
+		return n.substring(0, 3) + "-" + n.substring(3, 6) + "-" + n.substring(6, 10);
+	} else if (n.length == 11) {
+		return n.substring(0, 3) + "-" + n.substring(3, 7) + "-" + n.substring(7, 11);
+	} 
+}
+
+function numberToComma(x) {
+	return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function commaToNumber(x) {
+	return x.toString().replace(/,/g, '');
+}
+
+function objValidate(obj, msg) {
+	var rtn = true;
+	
+	if ($(obj).val() == '') {
+		alert(msg);
+		$(obj).focus();
+		
+		rtn = false;
+	}
+	
+	return rtn;
+}
+
+function valValidate(val, msg) {
+	var rtn = true;
+	
+	if (val == '') {
+		alert(msg);
+		
+		rtn = false;
+	}
+	
+	return rtn;
+}
+
+function formDataSend(formData, formUrl, handleData) {
+	$.ajax({
+		type : 'POST',
+		url : formUrl,
+		cache : false,
+		processData: false,
+		contentType: false,
+		dataType: 'json',
+		data : formData,
+		success: function(data) {
+			handleData(data);
+		},
+		error: function(xhr, status) {
+			console.log('formDataSendError');
+			return;
+		}
+	});
+}
+
+function zeroString(val) {
+	var rtn = val.toString();
+	
+	if (rtn.length == 1) {
+		rtn = '0' + rtn;
+	}
+	
+	return rtn;
+}
+
+function nullString(val) {
+	var rtn = val;
+	
+	if (val == null || val == 'null') {
+		rtn = '';
+	}
+	
+	return rtn;
+}
+
+function nullInt(val) {
+	var rtn = val;
+	
+	if (val == null || val == 'null') {
+		rtn = 0;
+	}
+	
+	return rtn;
+}
+
+function openPage(src) {
+	window.location.href = src;
+}
+
+function closePage() {
+	window.history.back();
+}
+
+function setCookie(cname, cvalue, exdays) {
+	var d = new Date();
+	d.setTime(d.getTime() + (exdays*24*60*60*1000));
+	var expires = 'expires=' + d.toUTCString();
+	document.cookie = cname + '=' + escape(cvalue) + '; ' + expires + '; path=/;';
+}
+
+function getCookie(cname) {
+	var name = cname + '=';
+	var ca = document.cookie.split(';');
+	for(var i=0; i<ca.length; i++) {
+		var c = ca[i];
+		while (c.charAt(0)==' ') c = c.substring(1);
+		if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
+	}
+	return '';
+}
+
+function agentCheck() {
+	var result = '';
+	
+	var userAgent = navigator.userAgent.toLowerCase();
+	
+	var mobile = (/iphone|ipad|ipod|android|momchopccsapp|momchoappandroid/i.test(userAgent));
+	
+	if (mobile) {
+		if (userAgent.search('momchopccsapp') > -1) {
+			result = 'momchoPccsApp';
+		} else if (userAgent.search('momchoappandroid') > -1) {
+			result = 'momchoAppAndroid';
+
+			var verCode = userAgent.substring(userAgent.search('momchoappandroid') + 16).trim();
+
+			if (verCode == '(8)' || verCode == '(9)' || verCode == '(10)' || verCode == '(11)') {
+				result = 'momchoAppAndroid8';
+			}
+		} else if (userAgent.search('android') > -1) {
+			result = 'android';
+		} else if ((userAgent.search('iphone') > -1) || (userAgent.search('ipod') > -1) || (userAgent.search('ipad') > -1)) {
+			result = 'ios';
+
+			if (userAgent.search('safari') > -1) {
+				result = 'ios_safari';
+			} else if (userAgent.search('naver') > -1) {
+				result = 'ios_naver';
+			} else if (userAgent.search('daum') > -1) {
+				result = 'ios_daum';
+			} else if (userAgent.search('nate') > -1) {
+				result = 'ios_nate';
+			} else if (userAgent.search('kakaotalk') > -1) {
+				result = 'ios_kakaotalk';
+			} else if (userAgent.search('facebook') > -1 || userAgent.search('fbios') > -1) {
+				result = 'ios_facebook';
+			} else if (userAgent.search('instagram') > -1) {
+				result = 'ios_instagram';
+			} else if (userAgent.search('momchoiosapp') > -1) {
+				result = 'ios_app';
+			}
+		} else {
+			result = 'other';
+		}
+	} else {
+		result = 'noMobile';
+	}
+	
+	return result;
+}
+
+function byteCheck(contents) {
+	var str_character;
+	var int_char_count;
+	var int_contents_length;
+	
+	int_char_count = 0;
+	int_contents_length = contents.length;
+	
+	for (k = 0; k < int_contents_length; k++) {
+		str_character = contents.charAt(k);
+		if (escape(str_character).length > 4)
+			int_char_count += 2;
+		else
+			int_char_count++;
+	}
+	
+	return int_char_count;
+}
+
+function stringToJson(str) {
+	var str = str.replace("[", "").replace("]", "");
+	var strArr = str.split("}");
+	var jsonItem = new Array();
+	
+	for (var i = 0; i < strArr.length - 1; i++) {
+		var strArrVal = strArr[i].replace(", {", "").replace("{", "");
+		var strArrValArr = strArrVal.split(", ");
+		var jsonVal = new Array();
+		
+		for (var j = 0; j < strArrValArr.length; j++) {
+			var jsonValArr = strArrValArr[j].split("=");
+			
+			jsonVal.push("'" + jsonValArr[0] + "':'" + jsonValArr[1] + "'");
+		}
+		
+		jsonItem.push("{" + jsonVal + "}");
+	}
+	
+	var json = "[" + jsonItem + "]";
+	
+	return eval(json);
+}
+
+function pictureSelectWrapClose() {
+	angular.element('.picture--select--wrap').addClass('hide');
+}
+
+function pictureUploadMessageOpen() {
+	angular.element('.picture--select--wrap').addClass('hide');
+	
+	var wHeight = angular.element(window).height();
+	var top = angular.element('body').scrollTop() + (wHeight / 2);
+	
+	angular.element('section').css({overflow:'hidden'}).bind('touchmove', function(e){e.preventDefault()});
+	
+	angular.element('.textmessage.overlay').removeClass('hide');
+	angular.element('.txtmessage').css({'top': top, 'height': wHeight});
+	angular.element('.txtmessage').text('이미지를 업로드중입니다.').removeClass('hide');
+}
+
+function pictureUploadMessageClose() {
+	angular.element('section').css({overflow:'visible'}).unbind('touchmove');
+	angular.element('.overlay').addClass('hide');
+	angular.element('.txtmessage').text('').addClass('hide');
+}
+
+function version(code, name) {
+	versionCode = code;
+	versionName = name;
+}
+
+function goAlert(_text){
+	var html = '<div class="alert--page">';
+	html +='<div class="alert--content">';
+	html +='<img src="http://good.momcho.co.kr/momcho_html/img/alert_img.png" alt="" class="alertImg">';
+	html +='<div class="second-nav">';
+	html +='<h2>'+_text+'</h2>';
+	html +='</div>';
+	html +='<a href="javascript:;"  onclick="closeAlert()" class="alert--btn">확인</a>';
+	html +='</div>';
+	html +='</div>';
+	
+	$("section:first").append(html);
+}
+function closeAlert(){
+	$("div.alert--page").empty().hide();
+}

@@ -1,0 +1,80 @@
+var adbayPurchaseClass = function(shopid){
+	this.shopid 	= shopid;
+	this.goods  	= new Array(); 
+	this.product	= new Array();
+	this.price		= new Array();
+	
+	this.goodcnt	= 0;
+	this.pricecnt	= 0;
+	this.productcnt	= 0;
+
+	this.setGoods = function(goods){
+		this.goods[this.goodcnt++] = goods;
+	};
+
+	this.setProduct = function(product){
+		this.product[this.pricecnt++] = product;
+	};
+
+	this.setPrice = function(price){
+		price = ''+price;
+		price = price.replace(",","");
+		this.price[this.productcnt++] = price;
+	};
+	
+	this.send = function(){
+		if(this.shopid)
+		{
+			this.goods = this.goods.join("|");
+			this.product = this.product.join("|");
+			this.price = this.price.join("|");
+			
+			var src_addr= document.location.protocol +'//adcheck.about.co.kr/mad/prd/buy?shopid='+this.shopid+"&goodscode="+this.goods+"&prodcnt="+this.product+"&price="+this.price;
+			var div = document.createElement("div");
+			div.id = "adbay_div";
+			document.body.appendChild(div);
+			document.getElementById("adbay_div").innerHTML="<iframe id='_buyifrm' name='_buyifrm' src='"+src_addr+"' width='0' height='0' style='display:none'></iframe>";
+		}
+	};
+}
+
+var adbayPurchaseCafe24Class = function(shopid){
+	this.shopid 	= shopid;
+	this.goods  	= new Array(); 
+	this.product	= new Array();
+	this.price		= new Array();
+
+	this.goodcnt	= 0;
+	this.pricecnt	= 0;
+	this.productcnt	= 0;
+
+	this.setGoods = function(goods){
+        goods = goods.split("&");
+        var goods_id = goods[0].split("=");
+		this.goods[this.goodcnt++] = goods_id[1];
+	};
+
+	this.setProduct = function(product){
+		this.product[this.pricecnt++] = product;
+	};
+
+	this.setPrice = function(price){
+		price = price.replace(",","");
+		this.price[this.productcnt++] = price;
+	};
+
+	this.send = function(){
+		if(this.shopid)
+		{
+			this.goods = this.goods.join("|");
+			this.product = this.product.join("|");
+			this.price = this.price.join("|");
+			
+			var src_addr= document.location.protocol +'//adcheck.about.co.kr/mad/prd/buy?shopid='+this.shopid+"&goodscode="+this.goods+"&prodcnt="+this.product+"&price="+this.price;
+			var div = document.createElement("div");
+			div.id = "adbay_div";
+			document.body.appendChild(div);
+			document.getElementById("adbay_div").innerHTML="<iframe id='_buyifrm' name='_buyifrm' src='"+src_addr+"' width='0' height='0' style='display:none'></iframe>";
+		}
+	};
+}
